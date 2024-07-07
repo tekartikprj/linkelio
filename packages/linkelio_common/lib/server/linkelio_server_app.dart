@@ -2,7 +2,9 @@
 
 import 'package:linkelio_common/constants.dart';
 import 'package:linkelio_common/firestore/firestore_database.dart';
+import 'package:linkelio_common/html/html.dart';
 import 'package:linkelio_common/model/all_models.dart';
+import 'package:tekartik_app_http/app_http.dart';
 import 'package:tekartik_firebase_functions/firebase_functions.dart';
 import 'package:tkcms_common/tkcms_common.dart';
 import 'package:tkcms_common/tkcms_flavor.dart';
@@ -40,21 +42,17 @@ class LinkelioServerApp extends TkCmsServerApp implements CommonServerApp {
           flavorContext:
               AppFlavorContext(app: app, flavorContext: flavorContext));
       var id = url.basename(request.uri.path);
-      var link = await databaseService.getLink(id);
-      var redirectUrl = link.url.v;
-      if (redirectUrl?.isNotEmpty ?? false) {
-        await res.redirect(Uri.parse(redirectUrl!), status: 301);
-      } else {
-        await res.send('''
-<html lang="en">
-<body>
-<h1>Linkelio</h1>
-<p>Link $id not found</p>
-</body>
-</html>
-      ''');
-        return;
+      if (id != '/' && id.isNotEmpty) {
+        var link = await databaseService.getLink(id);
+        var redirectUrl = link.url.v;
+        if (redirectUrl?.isNotEmpty ?? false) {
+          await res.redirect(Uri.parse(redirectUrl!), status: 301);
+          return;
+        }
       }
+
+      res.headers.set(httpHeaderContentType, httpContentTypeHtml);
+      await res.send(linkNotFoundContent(id));
     } catch (e, st) {
       // devPrint(st);
       await sendCatchErrorResponse(request, e, st);
