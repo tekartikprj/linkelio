@@ -1,0 +1,10 @@
+# IDE
+.idea/
+*.iml
+.vscode/
+
+# Local
+build/
+.local/
+.DS_Store
+.uuid
