@@ -9,29 +9,44 @@ import 'package:tkcms_common/tkcms_common.dart';
 import 'package:tkcms_common/tkcms_flavor.dart';
 import 'package:tkcms_common/tkcms_server.dart';
 
-typedef CreateServerAppFunction = CommonServerApp Function(
+/// Create a server app
+typedef CreateServerAppFunction = LinkelioCommonServerApp Function(
     TkCmsServerAppContext context, String app);
-CommonServerApp linkelioCreateServerAppLocalClient(
+
+/// Create a server app
+LinkelioCommonServerApp linkelioCreateServerAppLocalClient(
     TkCmsServerAppContext context, String app) {
   return LinkelioServerApp(context: context, app: app);
 }
 
-abstract class CommonServerApp {
+/// Common server app
+abstract class LinkelioCommonServerApp {
+  /// Initialize all functions
   void initFunctions();
 }
 
-class LinkelioServerApp extends TkCmsServerApp implements CommonServerApp {
+/// Linkelio server app
+class LinkelioServerApp extends TkCmsServerAppV2
+    implements LinkelioCommonServerApp {
+  /// The app
   final String app;
-  LinkelioServerApp({required super.context, required this.app}) {
+
+  /// Constructor
+  LinkelioServerApp({required super.context, required this.app})
+      : super(apiVersion: apiVersion2) {
     linkelioInitAllBuilders();
   }
 
-  late String link;
+  /// Link function
+  late String _link;
+
+  /// Link function
   HttpsFunction get linkV1 => functions.https.onRequest(
         linkHttp,
         httpsOptions: HttpsOptions(cors: true, region: regionBelgium),
       );
 
+  /// Link http
   Future<void> linkHttp(ExpressHttpRequest request) async {
     try {
       var res = request.response;
@@ -64,36 +79,17 @@ class LinkelioServerApp extends TkCmsServerApp implements CommonServerApp {
     switch (flavorContext) {
       case FlavorContext.prod:
       case FlavorContext.prodx:
-        link = functionLinkV1Prod;
+        _link = functionLinkV1Prod;
 
         break;
       case FlavorContext.dev:
       case FlavorContext.devx:
       default:
-        link = functionLinkV1Dev;
+        _link = functionLinkV1Dev;
         break;
     }
-    functions[link] = linkV1;
+    functions[_link] = linkV1;
     super.initFunctions();
-  }
-
-  @override
-  Future<bool> handleCustom(ExpressHttpRequest request) async {
-    var uri = request.uri;
-    if (uri.pathSegments.isNotEmpty) {
-      var command = uri.pathSegments.last;
-      switch (command) {
-        /*
-        case commandAddParticipant:
-          await AddParticipantCommandHandler(
-            firebaseContext: firebaseContext,
-            request: request,
-            serverApp: this,
-          ).handle();
-          return true;*/
-      }
-    }
-    return false;
   }
 }
 

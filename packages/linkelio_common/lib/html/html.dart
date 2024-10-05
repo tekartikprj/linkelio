@@ -1,9 +1,11 @@
 import 'package:tekartik_mustache/mustache_sync.dart';
 
+/// Render not found content
 String linkNotFoundContent(String link) {
   return render(notFoundContent, {'link': link});
 }
 
+/// Not found content
 var notFoundContent = '''
 <!DOCTYPE html>
 <html>

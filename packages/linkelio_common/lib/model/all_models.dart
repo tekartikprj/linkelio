@@ -3,6 +3,8 @@ import 'package:tkcms_common/tkcms_api.dart';
 import 'package:tkcms_common/tkcms_firestore.dart';
 
 var _done = false;
+
+/// Initialize all builders
 void linkelioInitApiBuilders() {
   initApiBuilders();
   // common
@@ -11,6 +13,7 @@ void linkelioInitApiBuilders() {
   //]);
 }
 
+/// Initialize all builders
 void linkelioInitFsBuilders() {
   initFsBuilders();
   // firestore
@@ -20,6 +23,7 @@ void linkelioInitFsBuilders() {
   //cvAddConstructors([CvSubClass.new]);
 }
 
+/// Initialize all builders
 void linkelioInitAllBuilders() {
   if (!_done) {
     _done = true;
