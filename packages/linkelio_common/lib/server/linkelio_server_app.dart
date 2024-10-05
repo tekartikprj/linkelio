@@ -9,25 +9,8 @@ import 'package:tkcms_common/tkcms_common.dart';
 import 'package:tkcms_common/tkcms_flavor.dart';
 import 'package:tkcms_common/tkcms_server.dart';
 
-/// Create a server app
-typedef CreateServerAppFunction = LinkelioCommonServerApp Function(
-    TkCmsServerAppContext context, String app);
-
-/// Create a server app
-LinkelioCommonServerApp linkelioCreateServerAppLocalClient(
-    TkCmsServerAppContext context, String app) {
-  return LinkelioServerApp(context: context, app: app);
-}
-
-/// Common server app
-abstract class LinkelioCommonServerApp {
-  /// Initialize all functions
-  void initFunctions();
-}
-
 /// Linkelio server app
-class LinkelioServerApp extends TkCmsServerAppV2
-    implements LinkelioCommonServerApp {
+class LinkelioServerApp extends TkCmsServerAppV2 {
   /// The app
   final String app;
 

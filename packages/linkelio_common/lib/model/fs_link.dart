@@ -9,6 +9,5 @@ class FsLink extends CvFirestoreDocumentBase {
   CvFields get fields => [url];
 }
 
-/// Get the collection reference for links
-CvCollectionReference<FsLink> fsAppLinkCollection(String app) =>
-    fsAppRoot(app).collection<FsLink>('link');
+/// FsLink model (for queries)
+final fsLinkModel = FsLink();
