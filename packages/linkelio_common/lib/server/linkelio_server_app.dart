@@ -4,7 +4,6 @@ import 'package:linkelio_common/constants.dart';
 import 'package:linkelio_common/firestore/firestore_database.dart';
 import 'package:linkelio_common/html/html.dart';
 import 'package:linkelio_common/model/all_models.dart';
-import 'package:tekartik_app_http/app_http.dart';
 import 'package:tkcms_common/tkcms_common.dart';
 import 'package:tkcms_common/tkcms_flavor.dart';
 import 'package:tkcms_common/tkcms_server.dart';
