@@ -17,9 +17,7 @@ void linkelioInitApiBuilders() {
 void linkelioInitFsBuilders() {
   initFsBuilders();
   // firestore
-  cvAddConstructors([
-    FsLink.new,
-  ]);
+  cvAddConstructors([FsLink.new]);
   //cvAddConstructors([CvSubClass.new]);
 }
 

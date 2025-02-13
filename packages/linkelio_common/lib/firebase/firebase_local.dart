@@ -8,23 +8,26 @@ import 'package:tkcms_common/tkcms_flavor.dart';
 import 'package:tkcms_common/tkcms_server.dart';
 
 /// app used as package name
-Future<FirebaseContext> initLinkelioFirebaseLocal(
-    {required String projectId,
-    required String app,
-    bool isWeb = false}) async {
+Future<FirebaseContext> initLinkelioFirebaseLocal({
+  required String projectId,
+  required String app,
+  bool isWeb = false,
+}) async {
   return await initFirebaseServicesLocalSembast(
-          projectId: projectId, isWeb: isWeb)
-      .initLinkelioLocal(app: app);
+    projectId: projectId,
+    isWeb: isWeb,
+  ).initLinkelioLocal(app: app);
 }
 
 /// Linkelio local init extension
 extension LinkelioFirebaseServiceContext on FirebaseServicesContext {
   /// Init server
-  Future<FirebaseContext> initLinkelioLocal(
-      {FirebaseApp? firebaseApp,
-      required String app,
-      Uri? baseUri,
-      bool debugFirestore = false}) async {
+  Future<FirebaseContext> initLinkelioLocal({
+    FirebaseApp? firebaseApp,
+    required String app,
+    Uri? baseUri,
+    bool debugFirestore = false,
+  }) async {
     firebaseApp ??= await initApp();
 
     var functions = functionsService.functions(firebaseApp);
@@ -40,13 +43,15 @@ extension LinkelioFirebaseServiceContext on FirebaseServicesContext {
     var serverApp = LinkelioServerApp(
       app: app,
       context: TkCmsServerAppContext(
-          firebaseContext: FirebaseContext(
-              auth: auth,
-              functions: functions,
-              firestore: firestore,
-              firebase: firebase,
-              firebaseApp: firebaseApp),
-          flavorContext: FlavorContext.dev),
+        firebaseContext: FirebaseContext(
+          auth: auth,
+          functions: functions,
+          firestore: firestore,
+          firebase: firebase,
+          firebaseApp: firebaseApp,
+        ),
+        flavorContext: FlavorContext.dev,
+      ),
     );
 
     serverApp.initFunctions();
@@ -54,10 +59,11 @@ extension LinkelioFirebaseServiceContext on FirebaseServicesContext {
     //var ffServer = await functions.serve();
     //baseUri ??= server.clientUri; // server.uri; //clientUri;
     var firebaseContext = init(
-        firebaseApp: firebaseApp,
-        ffServer: ffServer,
-        serverApp: serverApp,
-        debugFirestore: debugFirestore);
+      firebaseApp: firebaseApp,
+      ffServer: ffServer,
+      serverApp: serverApp,
+      debugFirestore: debugFirestore,
+    );
 
     return firebaseContext;
   }

@@ -10,12 +10,15 @@ class LinkelioFirestoreDatabaseService extends TkCmsFirestoreDatabaseService {
   /// App entity access
   late final appEntityAccess =
       TkCmsFirestoreDatabaseServiceEntityAccess<FsLinkelioApp>(
-          firestore: firebaseContext.firestore,
-          entityCollectionInfo: tkCmsFsAppCollectionInfo);
+        firestore: firebaseContext.firestore,
+        entityCollectionInfo: tkCmsFsAppCollectionInfo,
+      );
 
   /// Constructor
-  LinkelioFirestoreDatabaseService(
-      {required super.firebaseContext, required super.flavorContext}) {
+  LinkelioFirestoreDatabaseService({
+    required super.firebaseContext,
+    required super.flavorContext,
+  }) {
     linkelioInitFsBuilders();
   }
 

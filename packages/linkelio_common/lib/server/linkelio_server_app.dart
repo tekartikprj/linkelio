@@ -15,7 +15,7 @@ class LinkelioServerApp extends TkCmsServerAppV2 {
 
   /// Constructor
   LinkelioServerApp({required super.context, required this.app})
-      : super(apiVersion: apiVersion2) {
+    : super(apiVersion: apiVersion2) {
     linkelioInitAllBuilders();
   }
 
@@ -24,9 +24,9 @@ class LinkelioServerApp extends TkCmsServerAppV2 {
 
   /// Link function
   HttpsFunction get linkV1 => functions.https.onRequest(
-        linkHttp,
-        httpsOptions: HttpsOptions(cors: true, region: regionBelgium),
-      );
+    linkHttp,
+    httpsOptions: HttpsOptions(cors: true, region: regionBelgium),
+  );
 
   /// Link http
   Future<void> linkHttp(ExpressHttpRequest request) async {
@@ -34,9 +34,9 @@ class LinkelioServerApp extends TkCmsServerAppV2 {
       var res = request.response;
 
       var databaseService = LinkelioFirestoreDatabaseService(
-          firebaseContext: firebaseContext,
-          flavorContext:
-              AppFlavorContext(app: app, flavorContext: flavorContext));
+        firebaseContext: firebaseContext,
+        flavorContext: AppFlavorContext(app: app, flavorContext: flavorContext),
+      );
       var id = url.basename(request.uri.path);
       if (id != '/' && id.isNotEmpty) {
         var link = await databaseService.getLink(id);
