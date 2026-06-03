@@ -3,17 +3,20 @@
 import 'package:linkelio_common/server/linkelio_server_app.dart';
 import 'package:tekartik_firebase_firestore_sembast/firestore_sembast.dart';
 import 'package:tkcms_common/tkcms_common.dart';
+import 'package:tkcms_common/tkcms_content.dart';
 import 'package:tkcms_common/tkcms_firebase.dart';
 import 'package:tkcms_common/tkcms_flavor.dart';
 import 'package:tkcms_common/tkcms_server.dart';
 
 /// app used as package name
 Future<FirebaseContext> initLinkelioFirebaseLocal({
+  required DatabaseFactory sembastDatabaseFactory,
   required String projectId,
   required String app,
   bool isWeb = false,
 }) async {
   return await initFirebaseServicesLocalSembast(
+    databaseFactory: sembastDatabaseFactory,
     projectId: projectId,
     isWeb: isWeb,
   ).initLinkelioLocal(app: app);
