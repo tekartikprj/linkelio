@@ -13,7 +13,7 @@ class LinkelioServerApp extends TkCmsServerAppV2 {
   /// The app
   final String app;
 
-  /// Constructor
+  /// Creates a [LinkelioServerApp] instance with [context] and [app] identifier.
   LinkelioServerApp({required super.context, required this.app})
     : super(apiVersion: apiVersion2) {
     linkelioInitAllBuilders();

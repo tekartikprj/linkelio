@@ -14,7 +14,7 @@ class LinkelioFirestoreDatabaseService extends TkCmsFirestoreDatabaseService {
         entityCollectionInfo: tkCmsFsAppCollectionInfo,
       );
 
-  /// Constructor
+  /// Creates a [LinkelioFirestoreDatabaseService] instance with [firebaseContext] and [flavorContext].
   LinkelioFirestoreDatabaseService({
     required super.firebaseContext,
     required super.flavorContext,
