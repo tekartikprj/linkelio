@@ -42,7 +42,9 @@ class LinkelioServerApp extends TkCmsServerAppV2 {
         var link = await databaseService.getLink(id);
         var redirectUrl = link.url.v;
         if (redirectUrl?.isNotEmpty ?? false) {
-          await res.redirect(Uri.parse(redirectUrl!), status: 301);
+          // 302, not 301: browsers keep a 301 forever, a link whose target
+          // changes would keep sending them to the old one.
+          await res.redirect(Uri.parse(redirectUrl!), status: 302);
           return;
         }
       }
