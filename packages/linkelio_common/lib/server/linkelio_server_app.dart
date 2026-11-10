@@ -5,6 +5,7 @@ import 'package:linkelio_common/firestore/firestore_database.dart';
 import 'package:linkelio_common/html/html.dart';
 import 'package:linkelio_common/model/all_models.dart';
 import 'package:tkcms_common/tkcms_common.dart';
+import 'package:tkcms_common/tkcms_firestore.dart' show tkCmsIsValidDocumentId;
 import 'package:tkcms_common/tkcms_flavor.dart';
 import 'package:tkcms_common/tkcms_server.dart';
 
@@ -37,8 +38,15 @@ class LinkelioServerApp extends TkCmsServerAppV2 {
         firebaseContext: firebaseContext,
         flavorContext: AppFlavorContext(app: app, flavorContext: flavorContext),
       );
-      var id = url.basename(request.uri.path);
-      if (id != '/' && id.isNotEmpty) {
+      // The decoded last path segment: `Uri.path` is percent encoded, an id
+      // holding a space or an accent would never be found.
+      var segments = request.uri.pathSegments.where(
+        (segment) => segment.isNotEmpty,
+      );
+      var id = segments.isEmpty ? '' : segments.last;
+      // A document id, never a path (a decoded %2F would name a deeper
+      // document).
+      if (tkCmsIsValidDocumentId(id)) {
         var link = await databaseService.getLink(id);
         var redirectUrl = link.url.v;
         // An inactive link (switched off in the admin app) is not found.
@@ -50,7 +58,8 @@ class LinkelioServerApp extends TkCmsServerAppV2 {
         }
       }
 
-      res.headers.set(httpHeaderContentType, httpContentTypeHtml);
+      // utf-8: dart:io writes a plain text/html body as latin1.
+      res.headers.set(httpHeaderContentType, httpContentTypeHtmlStrict);
       await res.send(linkNotFoundContent(id));
     } catch (e, st) {
       // devPrint(st);

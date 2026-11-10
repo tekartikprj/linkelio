@@ -4,7 +4,7 @@ description: >-
   Use when working on Linkelio, the tkcms based url shortener: the FsLink
   firestore document (url, active, created, userId, isActive, fsLinkModel),
   LinkelioFirestoreDatabaseService (fsAppRef, fsLinkCollectionRef, fsLinkRef,
-  getLink), the LinkelioServerApp firebase function that 301-redirects a short
+  getLink), the LinkelioServerApp firebase function that 302-redirects a short
   link (linkV1, linkHttp, functionLinkV1Dev/functionLinkV1Prod), the not found
   page (linkNotFoundContent, notFoundContent), the builders
   (linkelioInitAllBuilders, linkelioInitFsBuilders, linkelioInitApiBuilders)
@@ -16,13 +16,13 @@ description: >-
 
 `linkelio_common` is the shared Dart code of Linkelio, a url shortener built on
 `tkcms_common`: one firestore document type (`FsLink`), the database service
-that reads it, the firebase function that resolves `<host>/<linkId>` into a 301
-redirect, and a local (sembast) firebase setup for dev and tests. It is the
-only package of a private project repository, so there is no pub.dev release.
+that reads it, the firebase function that resolves `<host>/<linkId>` into a 302
+redirect, and a local (sembast or memory) firebase setup for dev and tests.
+It is the only package of its repository, not released on pub.dev.
 
 ## Guidelines
 
-* Dependency (git, private project repo):
+* Dependency (git):
   ```yaml
   dependencies:
     linkelio_common:
@@ -82,15 +82,19 @@ only package of a private project repository, so there is no pub.dev release.
   `prodx` and under `functionLinkV1Dev` for everything else, then calls
   `super.initFunctions()` (the standard tkcms api functions). The function is
   `onRequest` with `HttpsOptions(cors: true, region: regionBelgium)`.
-* `linkHttp` takes the **last path segment** as the link id, loads it, and
-  `res.redirect(Uri.parse(url), status: 301)` when the stored `url` is not
-  empty; otherwise it answers `linkNotFoundContent(id)` as `text/html`. Any
-  error goes through tkcms' `sendCatchErrorResponse`. Keep new behaviour inside
-  that try/catch so a failure never leaks a stack trace to the browser.
+* `linkHttp` takes the **last non empty path segment, percent decoded**, as
+  the link id (`/a%20b` is `a b`; `Uri.path` itself is encoded); an id that
+  is not a document id (`tkCmsIsValidDocumentId`: `.`, `..`, a decoded `/`)
+  is not looked up. A found, active link with a url answers
+  `res.redirect(Uri.parse(url), status: 302)` (302, not 301: browsers keep a
+  301 for ever); otherwise `linkNotFoundContent(id)`, status 200, as
+  `text/html; charset=utf-8` (dart:io writes a plain `text/html` body as
+  latin1). Any error goes through tkcms' `sendCatchErrorResponse`, which
+  answers 500 with the error text **and its stack trace**: keep new code
+  inside the try/catch, and avoid errors that tell more than needed.
 * `linkNotFoundContent(link)` renders the `notFoundContent` mustache template
   (`tekartik_mustache`'s synchronous `render`) with a single `{{link}}`
-  variable. It is plain interpolation, not escaping: do not feed it anything
-  but a link id.
+  variable, html escaped (`{{ }}`, not `{{{ }}}`).
 * Local/dev/test setup: `initLinkelioFirebaseLocal(sembastDatabaseFactory:
   ..., projectId: ..., app: ..., isWeb: false)` builds the whole local firebase
   stack (sembast firestore + auth, memory functions), creates a
@@ -102,9 +106,10 @@ only package of a private project repository, so there is no pub.dev release.
   (`ffServerOrNull`), and `initLinkelioLocal` on a `FirebaseServicesContext` is
   the same thing when you already built the services yourself.
 * Everything here is server/VM oriented (`dart:io` through the local firebase
-  stack); the package itself ships no test, no example and no `bin/`. Write
-  tests in the consuming package (`@TestOn('vm')`) on top of
-  `initLinkelioFirebaseLocal`.
+  stack). `initFirebaseServicesMemory()` + `initLinkelioLocal(app:)` is the
+  all in memory stack (`example/main.dart`). Its memory http server does not
+  implement redirects: test `linkHttp` by calling it with a request of your
+  own (`test/linkelio_server_app_test.dart` fakes `ExpressHttpRequest`).
 
 ## Examples
 
